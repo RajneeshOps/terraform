@@ -8,7 +8,7 @@ pipeline {
         stage("Git Checkout") {
             steps {
                 script {
-                    git branch: 'main', url: 'https://github.com/RajneeshOps/AWS-Terraform-3.git'
+                    git branch: 'main', url: 'https://github.com/RajneeshOps/terraform.git'
                 }
             }
         }
