@@ -4,23 +4,15 @@ pipeline {
         terraform 'terraform'
     }
 
+    parameters {
+        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Select the Terraform action to perform')
+    }
+
     stages {
         stage("Git Checkout") {
             steps {
                 script {
                     git branch: 'main', url: 'https://github.com/RajneeshOps/terraform.git'
-                }
-            }
-        }
-
-        stage("Parameter Setup") {
-            steps {
-                script {
-                    properties([
-                        parameters([
-                            choice(choices: ['apply', 'destroy'], name: 'ACTION')
-                        ])
-                    ])
                 }
             }
         }
@@ -55,6 +47,9 @@ pipeline {
                     def userInput = input(id: 'confirm', message: 'Approve Terraform ?', parameters: [
                         [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Approve Terraform', name: 'confirm']
                     ])
+                    if (!userInput) {
+                        error('Terraform action not approved')
+                    }
                 }
             }
         }
@@ -62,7 +57,11 @@ pipeline {
         stage('Terraform Action') {
             steps {
                 script {
-                    sh "terraform ${params.ACTION} --auto-approve"
+                    if (params.ACTION == 'apply' || params.ACTION == 'destroy') {
+                        sh "terraform ${params.ACTION} --auto-approve"
+                    } else {
+                        error('Invalid Terraform action')
+                    }
                 }
             }
         }
