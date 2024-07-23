@@ -9,6 +9,14 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                script {
+                    deleteDir()
+                }
+            }
+        }
+
         stage("Git Checkout") {
             steps {
                 script {
